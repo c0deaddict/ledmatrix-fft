@@ -90,11 +90,17 @@ func processSpotifyEvents(conn *dbus.Conn, out chan PlaybackEvent) {
 			continue
 		}
 		body := msg.Body[1].(map[string]dbus.Variant)
-		status := body["PlaybackStatus"].Value().(string)
-		metadata := body["Metadata"].Value().(map[string]dbus.Variant)
-		artists := metadata["xesam:artist"].Value().([]string)
-		title := metadata["xesam:title"].Value().(string)
-		text := strings.Join(artists, " & ") + " - " + title
+		status := "Playing"
+		if value, ok := body["PlaybackStatus"]; ok {
+			status = value.Value().(string)
+		}
+		text := ""
+		if value, ok := body["Metadata"]; ok {
+			metadata := value.Value().(map[string]dbus.Variant)
+			artists := metadata["xesam:artist"].Value().([]string)
+			title := metadata["xesam:title"].Value().(string)
+			text = strings.Join(artists, " & ") + " - " + title
+		}
 		event := PlaybackEvent{status, text}
 		if last == nil || event != *last {
 			last = &event
@@ -129,7 +135,7 @@ func main() {
 	out := make(chan PlaybackEvent)
 	go processSpotifyEvents(conn, out)
 	for e := range out {
-		if e.status == "Playing" {
+		if e.status == "Playing" && e.text != "" {
 			postMessage(e.text)
 		}
 	}
