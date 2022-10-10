@@ -47,7 +47,6 @@ func newSpotifyWatcher() (*spotifyWatcher, error) {
 func (s *spotifyWatcher) loop() {
 	var last *PlaybackEvent
 	for msg := range s.ch {
-		fmt.Println(msg)
 		if msg.Body[0].(string) != "org.mpris.MediaPlayer2.Player" {
 			continue
 		}

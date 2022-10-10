@@ -154,10 +154,15 @@ func (s *Server) processSpotifyEvents() {
 	for e := range s.spotify.out {
 		s.mu.Lock()
 		if e.status != nil {
-			s.isPlaying = *e.status == "Playing"
-			s.updateState()
+			status := *e.status == "Playing"
+			if status != s.isPlaying {
+				log.Info().Msgf("spotify update status: %v -> %v", s.isPlaying, status)
+				s.isPlaying = status
+				s.updateState()
+			}
 		}
 		if e.text != nil && s.isPlaying {
+			log.Info().Msgf("spotify update: %s", *e.text)
 			s.postMessage(*e.text, 7500*time.Millisecond)
 		}
 		s.mu.Unlock()
@@ -170,6 +175,7 @@ func (s *Server) enable() {
 
 	s.enabled = true
 	s.updateState()
+	log.Info().Msg("enabled")
 }
 
 func (s *Server) disable() {
@@ -178,6 +184,7 @@ func (s *Server) disable() {
 
 	s.enabled = false
 	s.updateState()
+	log.Info().Msg("disabled")
 }
 
 func (s *Server) updateState() {
