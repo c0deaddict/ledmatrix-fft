@@ -5,8 +5,8 @@ with lib;
 let
 
   cfg = config.services.ledmatrix-fft;
-  format = pkgs.formats.json { };
-  configFile = format.generate "config.json" cfg.settings;
+
+  args = [ "server" ] ++ cfg.extraArgs;
 
 in
 {
@@ -19,9 +19,10 @@ in
       default = pkgs.callPackage ../pkgs/ledmatrix-fft.nix { };
     };
 
-    settings = mkOption {
-      default = { };
-      type = format.type;
+    extraArgs = mkOption {
+      type = with types; listOf str;
+      default = [ ];
+      description = "Extra arguments to pass to ledmatrix-fft.";
     };
   };
 
@@ -33,7 +34,7 @@ in
 
       Service = {
         Type = "simple";
-        ExecStart = "${cfg.package}/bin/ledmatrix-fft -config ${configFile}";
+        ExecStart = "${cfg.package}/bin/ledmatrix-fft ${concatStringsSep " " args}";
         Restart = "on-failure";
         RestartSec = 3;
       };
