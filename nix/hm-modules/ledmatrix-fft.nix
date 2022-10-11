@@ -24,6 +24,8 @@ in
       default = [ ];
       description = "Extra arguments to pass to ledmatrix-fft.";
     };
+
+    cli.enable = mkEnableOption "install cli in home.packages";
   };
 
   config = mkIf cfg.enable {
@@ -41,5 +43,7 @@ in
 
       Install = { WantedBy = [ "graphical-session.target" ]; };
     };
+
+    home.packages = if cfg.cli.enable then [ cfg.package ] else [ ];
   };
 }
