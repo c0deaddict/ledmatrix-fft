@@ -32,6 +32,8 @@ in
     systemd.user.services.ledmatrix-fft = {
       Unit = {
         Description = "Ledmatrix FFT";
+        StartLimitBurst = 5;
+        StartLimitInterval = 30;
       };
 
       Service = {
