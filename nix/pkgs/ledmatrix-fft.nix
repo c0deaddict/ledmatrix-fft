@@ -6,7 +6,7 @@ buildGoModule rec {
 
   src = ../..;
 
-  vendorSha256 = "sha256-Xw8jHPVmNicbc/f+iex7QhR/mLkOzxPexVLqy+/GVOI=";
+  vendorHash = "sha256-Xw8jHPVmNicbc/f+iex7QhR/mLkOzxPexVLqy+/GVOI=";
 
   subPackages = [ "cmd/ledmatrix-fft" ];
 
